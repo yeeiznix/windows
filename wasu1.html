@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Glass UI - Clean Grid Photo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+    <style>
+        /* =================================== GLOBAL & LAYOUT =================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+            background: #11192e;
+            color: #fff;
+            min-height: 100vh;
+        }
+        .background {
+            position: fixed;
+            inset: 0;
+            background: #11192e;
+            background-image: url("assets/beground.jpg");
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            filter: blur(3px);
+            transform: scale(1.03);
+            z-index: -2;
+        }
+        .background::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 25, 50, 0.55);
+        }
+        .container {
+            width: 100%;
+            min-height: 100vh;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+        }
+        /* =================================== GLASS EFFECT & PANELS =================================== */
+        .glass {
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            background: rgba(255, 255, 255, .10);
+            border: 1px solid rgba(255, 255, 255, .18);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, .25), 0 10px 40px rgba(0, 0, 0, .18);
+        }
+        header, .grid-box {
+            transition: transform 0.35s, background 0.35s, box-shadow 0.35s;
+        }
+        /* ========================== CONTENT & NAVBAR ========================== */
+        .content {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            position: relative;
+            flex: 1;
+        }
+        header {
+            height: 75px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            border-radius: 28px;
+            position: relative;
+            z-index: 100;
+        }
+        .nav-left {
+            display: flex;
+            align-items: center;
+        }
+        .home-btn {
+            color: #fff;
+            text-decoration: none;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .home-btn:hover {
+            transform: scale(1.05);
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+        
+        /* TOMBOL AVATAR PROFIL */
+        .profile-trigger {
+            position: relative;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+        .profile-trigger:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: scale(1.05);
+        }
+        .profile-trigger img {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #aaa;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+        }
+
+        /* ======================================================= RETRO MS PAINT POPUP (KEMBALI DI TEMPAT SEMULA / POJOK KANAN ATAS) ======================================================= */
+        .popup-paint-wrapper {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            width: 650px;
+            height: 550px;
+            font-family: 'MS Sans Serif', Tahoma, Arial, sans-serif;
+            background-color: #dcd0ff;
+            border: 3px solid #fff;
+            border-right-color: #8a7bbf;
+            border-bottom-color: #8a7bbf;
+            box-shadow: 4px 4px 25px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            z-index: 99999 !important;
+            opacity: 0;
+            transform: translateY(-10px) scale(1);
+            transform-origin: top right;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+            cursor: default;
+        }
+        .popup-paint-wrapper.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+        
+        /* Komponen Utama Jendela MS Paint */
+        .title-bar {
+            background: linear-gradient(90deg, #b59eff, #e2d7ff);
+            color: #5d48b3;
+            padding: 4px 8px;
+            font-weight: bold;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .title-left { display: flex; align-items: center; }
+        .title-icon { margin-right: 6px; }
+        .close-btn-window {
+            background: #e6ddff;
+            border: 1px solid #fff;
+            border-right-color: #8a7bbf;
+            border-bottom-color: #8a7bbf;
+            color: #5d48b3;
+            padding: 0 5px;
+            font-size: 11px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .menu-bar {
+            display: flex;
+            padding: 2px 6px;
+            font-size: 12px;
+            color: #5d48b3;
+            border-bottom: 2px solid #bdaeff;
+        }
+        .menu-item { margin-right: 12px; cursor: pointer; }
+        .menu-item span { text-decoration: underline; }
+        
+        .main-content {
+            display: flex;
+            flex: 1;
+            background-color: #dcd0ff;
+            padding: 4px;
+            position: relative;
+        }
+        .toolbar {
+            width: 60px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-gap: 2px;
+            align-content: start;
+            background-color: #dcd0ff;
+            padding-right: 4px;
+        }
+        .tool-btn {
+            width: 25px;
+            height: 25px;
+            background-color: #e6ddff;
+            border: 2px solid #fff;
+            border-right-color: #8a7bbf;
+            border-bottom-color: #8a7bbf;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            color: #6a56c2;
+            cursor: pointer;
+        }
+        .tool-btn.active {
+            background-color: #c4b5f7;
+            border: 2px solid #8a7bbf;
+            border-right-color: #fff;
+            border-bottom-color: #fff;
+        }
+        
+        /* AREA KANVAS HITAM */
+        .canvas-area {
+            flex: 1;
+            background-color: #000000;
+            border: 3px solid #8a7bbf;
+            border-right-color: #fff;
+            border-bottom-color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+        .stars-decor {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            color: #ff00ff;
+            font-size: 24px;
+            line-height: 0.8;
+            filter: drop-shadow(0 0 5px #ff00ff);
+            user-select: none;
+            z-index: 5;
+        }
+
+        /* DATA PROFIL DI TENGAH KANVAS */
+        .canvas-profile-content {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            padding: 20px;
+            text-align: center;
+        }
+        .canvas-avatar {
+            width: 85px;
+            height: 85px;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            object-fit: cover;
+            margin-bottom: 12px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
+            background: #fff;
+        }
+        .canvas-name {
+            font-family: 'Poppins', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 2px;
+            letter-spacing: 0.5px;
+        }
+        .canvas-email {
+            font-family: 'Poppins', sans-serif;
+            font-size: 13px;
+            color: #cccccc;
+            margin-bottom: 22px;
+        }
+        
+        /* BAR SOSIAL MEDIA MELENGKUNG CAPSULE */
+        .canvas-social-bar {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 50px;
+            padding: 12px 45px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 35px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            width: 85%;
+            max-width: 420px;
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.1);
+        }
+        .canvas-social-bar a {
+            font-size: 26px;
+            transition: transform 0.2s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .canvas-social-bar a:hover { transform: scale(1.18); }
+        .canvas-social-bar a.fb { color: #1877f2 !important; }
+        .canvas-social-bar a.ig { color: #e1306c !important; }
+        .canvas-social-bar a.yt { color: #ff0000 !important; }
+        .canvas-social-bar a.tt { color: #00f2fe !important; }
+
+        /* Bagian Palet Bawah Jendela */
+        .bottom-section {
+            background-color: #dcd0ff;
+            padding: 4px;
+            border-top: 2px solid #bdaeff;
+        }
+        .color-box {
+            display: flex;
+            background-color: #e6ddff;
+            border: 2px solid #8a7bbf;
+            border-right-color: #fff;
+            border-bottom-color: #fff;
+            padding: 4px;
+            margin-bottom: 4px;
+            align-items: center;
+        }
+        .current-colors {
+            width: 32px;
+            height: 32px;
+            border: 2px solid #fff;
+            border-right-color: #8a7bbf;
+            border-bottom-color: #8a7bbf;
+            position: relative;
+            margin-right: 6px;
+            background-color: #fff;
+        }
+        .color-foreground {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 16px;
+            height: 16px;
+            background-color: #d500f9;
+            border: 1px solid #000;
+            z-index: 2;
+        }
+        .color-background {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 16px;
+            height: 16px;
+            background-color: #fff;
+            border: 1px solid #000;
+            z-index: 1;
+        }
+        .color-palette {
+            display: grid;
+            grid-template-columns: repeat(14, 15px);
+            grid-gap: 2px;
+        }
+        .color-tile { width: 15px; height: 15px; border: 1px solid #8a7bbf; }
+        .status-bar {
+            background-color: #dcd0ff;
+            border: 2px solid #8a7bbf;
+            border-right-color: #fff;
+            border-bottom-color: #fff;
+            padding: 2px 6px;
+            font-size: 11px;
+            color: #5d48b3;
+        }
+        
+        /* Mini Pop-up "Two Time" */
+        .two-time-popup {
+            position: absolute;
+            top: 40px;
+            right: -80px;
+            width: 210px;
+            background-color: #d2c4ff;
+            border: 2px solid #fff;
+            border-right-color: #7966c4;
+            border-bottom-color: #7966c4;
+            box-shadow: 4px 4px 15px rgba(0,0,0,0.4);
+            z-index: 100;
+        }
+        .popup-title { background-color: #a38eff; color: #fff; padding: 3px 8px; font-size: 11px; font-weight: bold; }
+        .popup-body { padding: 10px; display: flex; flex-direction: column; align-items: center; text-align: center; font-size: 11px; color: #5d48b3; }
+        .bubble-chat { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+        .speech-icon { width: 18px; height: 18px; background-color: #fff; border-radius: 50%; position: relative; }
+        .speech-icon::after { content: ''; position: absolute; bottom: 0; right: -2px; width: 6px; height: 6px; background-color: #fff; transform: rotate(45deg); }
+        .popup-btn { background-color: #e6ddff; border: 2px solid #fff; border-right-color: #7966c4; border-bottom-color: #7966c4; padding: 2px 12px; color: #5d48b3; cursor: pointer; font-size: 10px; }
+        
+        /* Cascading Errors */
+        .error-cascade {
+            position: absolute;
+            bottom: -25px;
+            right: 25px;
+            width: 170px;
+            background-color: #e6ddff;
+            border: 2px solid #fff;
+            border-right-color: #7966c4;
+            border-bottom-color: #7966c4;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+        }
+        .error-title { background-color: #7c5eff; color: white; padding: 2px 6px; font-size: 11px; display: flex; justify-content: space-between; align-items: center; }
+        .close-x { border: 1px solid #fff; padding: 0 3px; font-size: 9px; background: #e6ddff; color: #000; cursor: pointer; }
+        .error-body { padding: 6px; display: flex; align-items: center; gap: 6px; font-size: 11px; color: #333; }
+        .error-icon { font-size: 14px; }
+        .err-1 { transform: translate(-45px, -45px); z-index: 4; }
+        .err-2 { transform: translate(-30px, -30px); z-index: 5; }
+        .err-3 { transform: translate(-15px, -15px); z-index: 6; }
+        .err-4 { transform: translate(0, 0); z-index: 7; box-shadow: 4px 4px 12px rgba(0,0,0,0.5); }
+
+        /* ========================================= KOTAK-KOTAK GRID FOTO ========================================= */
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            margin-top: 10px;
+            z-index: 1;
+        }
+        .grid-box {
+            overflow: hidden;
+            border-radius: 24px;
+            cursor: pointer;
+            position: relative;
+            aspect-ratio: 4 / 3;
+        }
+        .grid-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: .4s;
+            background: rgba(255,255,255,0.05);
+        }
+        .card-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px 18px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            z-index: 2;
+            pointer-events: none;
+        }
+        .card-dl-btn {
+            position: relative;
+            width: 54px;
+            height: 54px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            pointer-events: auto;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .dl-icon-status {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: #fff;
+            z-index: 2;
+        }
+        .dl-png-badge {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            background: transparent !important;
+            border: none !important;
+        }
+        .card-dl-btn:hover { transform: scale(1.1); filter: none !important; }
+        .card-dl-btn:active { transform: scale(0.95); }
+        
+        .grid-box::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(transparent 50%, rgba(0,0,0,0.6));
+            z-index: 1;
+        }
+        .grid-box:hover img { transform: scale(1.06); }
+        .grid-box:hover { box-shadow: 0 0 25px rgba(255,255,255,.15), 0 15px 35px rgba(0,0,0,.3); }
+        .status-msg { grid-column: 1 / -1; text-align: center; padding: 40px; font-size: 18px; color: #ddd; }
+        
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin: 40px 0 20px 0;
+            z-index: 10;
+        }
+        .page-btn {
+            width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;
+            border-radius: 12px; background: #2b3344; border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #2ecc71; font-size: 18px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;
+        }
+        .page-btn:hover { background: rgba(46, 204, 113, 0.2); border-color: #2ecc71; transform: translateY(-2px); }
+        .page-btn.active { background: #2ecc71; color: #fff; border-color: #2ecc71; box-shadow: 0 0 15px rgba(46, 204, 113, 0.4); }
+        .page-dots { color: #fff; font-size: 20px; letter-spacing: 2px; padding: 0 5px; }
+        
+        /* ========================================= RESPONSIVE MODIFIERS ========================================= */
+        @media(max-width:1200px) {
+            .main-grid { grid-template-columns: repeat(2, 1fr); }
+            .two-time-popup { right: 10px; top: 20px; }
+        }
+        @media(max-width:768px) {
+            .container { padding: 15px; }
+            header { padding: 15px 20px; }
+            .main-grid { grid-template-columns: 1fr; }
+            .card-info { padding: 12px 14px; }
+            .card-dl-btn { width: 46px; height: 46px; }
+            .page-btn { width: 40px; height: 40px; font-size: 15px; border-radius: 8px; }
+            
+            /* Skala otomatis diperkecil agar pas menggelantung manis di sisi kanan mobile */
+            .popup-paint-wrapper {
+                top: 48px;
+                right: -5px;
+                transform: translateY(-10px) scale(0.46);
+            }
+            .popup-paint-wrapper.active {
+                transform: translateY(0) scale(0.46);
+            }
+            .two-time-popup { right: 10px; top: 30px; }
+        }
+        @media(max-width:420px) {
+            .popup-paint-wrapper {
+                right: -15px;
+                transform: translateY(-10px) scale(0.40);
+            }
+            .popup-paint-wrapper.active {
+                transform: translateY(0) scale(0.40);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="background"></div>
+    <div class="container">
+        <div class="content">
+            <!-- HEADER BAR -->
+            <header class="glass">
+                <div class="nav-left">
+                    <a class="home-btn" id="goHome"><i class="fa-solid fa-house"></i> Home</a>
+                </div>
+                
+                <!-- AVATAR PROFILE TRIGGER -->
+                <div class="profile-trigger" id="openProfile">
+                    <img src="assets/avatar.jpg" alt="Avatar">
+                    
+                    <!-- POPUP RETRO MS PAINT WINDOW (KEMBALI KE POSISI ASAL) -->
+                    <div class="popup-paint-wrapper" id="profileModal">
+                        <!-- Title Bar -->
+                        <div class="title-bar">
+                            <div class="title-left"><span class="title-icon">🎨</span> Doodles Profile</div>
+                            <button class="close-btn-window" id="closeProfileBtn">X</button>
+                        </div>
+                        
+                        <!-- Menu Bar -->
+                        <div class="menu-bar">
+                            <div class="menu-item" id="backToGalleryMenu"><span>B</span>ack to Gallery</div>
+                            <div class="menu-item"><span>E</span>dit</div>
+                            <div class="menu-item"><span>V</span>iew</div>
+                            <div class="menu-item"><span>I</span>mage</div>
+                            <div class="menu-item"><span>O</span>ptions</div>
+                            <div class="menu-item"><span>H</span>elp</div>
+                        </div>
+
+                        <!-- Main Content Area -->
+                        <div class="main-content">
+                            <!-- Toolbar Kiri -->
+                            <div class="toolbar">
+                                <div class="tool-btn">⬚</div><div class="tool-btn">✂</div>
+                                <div class="tool-btn">✎</div><div class="tool-btn">🧼</div>
+                                <div class="tool-btn">🪣</div><div class="tool-btn">🔍</div>
+                                <div class="tool-btn active">🖌</div><div class="tool-btn">🌾</div>
+                                <div class="tool-btn">🔤</div><div class="tool-btn">┃</div>
+                                <div class="tool-btn">╲</div><div class="tool-btn">▱</div>
+                                <div class="tool-btn">⬡</div><div class="tool-btn">⭕</div>
+                                <div class="tool-btn">⬜</div><div class="tool-btn">💬</div>
+                            </div>
+
+                            <!-- Canvas Area (Hitam) -->
+                            <div class="canvas-area">
+                                <!-- Dekorasi Bintang Neon -->
+                                <div class="stars-decor">
+                                    ⭐<br>&nbsp;&nbsp;⭐<br>⭐
+                                </div>
+
+                                <!-- DATA KONTEN PROFIL DI TENGAH KANVAS -->
+                                <div class="canvas-profile-content">
+                                    <img src="assets/avatar.jpg" class="canvas-avatar" alt="Bebek Profile">
+                                    <div class="canvas-name">Musfiqur Rahman</div>
+                                    <div class="canvas-email">nftexpert@gmail.com</div>
+                                    
+                                    <!-- BAR SOSIAL MEDIA MELENGKUNG CAPSULE -->
+                                    <div class="canvas-social-bar">
+                                        <a href="#" class="fb"><i class="fa-brands fa-facebook"></i></a>
+                                        <a href="#" class="ig"><i class="fa-brands fa-instagram"></i></a>
+                                        <a href="#" class="yt"><i class="fa-brands fa-youtube"></i></a>
+                                        <a href="#" class="tt"><i class="fa-brands fa-tiktok"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bagian Palet Bawah -->
+                        <div class="bottom-section">
+                            <div class="color-box">
+                                <div class="current-colors">
+                                    <div class="color-foreground"></div>
+                                    <div class="color-background"></div>
+                                </div>
+                                <div class="color-palette">
+                                    <!-- Baris Atas -->
+                                    <div class="color-tile" style="background-color: #1a0033;"></div>
+                                    <div class="color-tile" style="background-color: #330066;"></div>
+                                    <div class="color-tile" style="background-color: #4c0099;"></div>
+                                    <div class="color-tile" style="background-color: #6600cc;"></div>
+                                    <div class="color-tile" style="background-color: #8000ff;"></div>
+                                    <div class="color-tile" style="background-color: #9933ff;"></div>
+                                    <div class="color-tile" style="background-color: #b266ff;"></div>
+                                    <div class="color-tile" style="background-color: #cc99ff;"></div>
+                                    <div class="color-tile" style="background-color: #e6ccff;"></div>
+                                    <div class="color-tile" style="background-color: #f2e6ff;"></div>
+                                    <div class="color-tile" style="background-color: #4a148c;"></div>
+                                    <div class="color-tile" style="background-color: #7b1fa2;"></div>
+                                    <div class="color-tile" style="background-color: #9c27b0;"></div>
+                                    <div class="color-tile" style="background-color: #ba68c8;"></div>
+                                    
+                                    <!-- Baris Bawah -->
+                                    <div class="color-tile" style="background-color: #ffffff;"></div>
+                                    <div class="color-tile" style="background-color: #e1bee7;"></div>
+                                    <div class="color-tile" style="background-color: #d1c4e9;"></div>
+                                    <div class="color-tile" style="background-color: #b39ddb;"></div>
+                                    <div class="color-tile" style="background-color: #ce93d8;"></div>
+                                    <div class="color-tile" style="background-color: #b0bec5;"></div>
+                                    <div class="color-tile" style="background-color: #b3e5fc;"></div>
+                                    <div class="color-tile" style="background-color: #c8e6c9;"></div>
+                                    <div class="color-tile" style="background-color: #fff9c4;"></div>
+                                    <div class="color-tile" style="background-color: #ffcc80;"></div>
+                                    <div class="color-tile" style="background-color: #ffab91;"></div>
+                                    <div class="color-tile" style="background-color: #d7ccc8;"></div>
+                                    <div class="color-tile" style="background-color: #cfd8dc;"></div>
+                                    <div class="color-tile" style="background-color: #eaeaea;"></div>
+                                </div>
+                            </div>
+                            <div class="status-bar">
+                                Musfiqur Rahman Profile Workspace.
+                            </div>
+                        </div>
+
+                        <!-- Pop-up Kanan Atas ("two time") -->
+                        <div class="two-time-popup">
+                            <div class="popup-title">two time</div>
+                            <div class="popup-body">
+                                <div class="bubble-chat">
+                                    <div class="speech-icon"></div>
+                                    <span>i think that i like you</span>
+                                </div>
+                                <button class="popup-btn" id="youDoBtn">you do?</button>
+                            </div>
+                        </div>
+
+                        <!-- Cascading Errors Kanan Bawah -->
+                        <div class="error-cascade err-1"><div class="error-title"><span>Error</span> <span class="close-x" onclick="this.parentElement.parentElement.remove()">X</span></div></div>
+                        <div class="error-cascade err-2"><div class="error-title"><span>Error</span> <span class="close-x" onclick="this.parentElement.parentElement.remove()">X</span></div></div>
+                        <div class="error-cascade err-3"><div class="error-title"><span>Error</span> <span class="close-x" onclick="this.parentElement.parentElement.remove()">X</span></div></div>
+                        <div class="error-cascade err-4">
+                            <div class="error-title"><span>Error</span> <span class="close-x" onclick="this.parentElement.parentElement.remove()">X</span></div>
+                            <div class="error-body">
+                                <span class="error-icon">💾</span>
+                                <span>it tried and im tired.</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </header>
+
+            <!-- PHOTO GRID CONTAINER -->
+            <div class="main-grid" id="photoGrid">
+                <div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Memuat galeri dari GitHub...</div>
+            </div>
+
+            <!-- PAGINATION BOTTOM -->
+            <div class="pagination-container" id="pagination"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const photoGrid = document.getElementById("photoGrid");
+            const paginationContainer = document.getElementById("pagination");
+            const repoApiUrl = "https://api.github.com/repos/yeeiznix/GALER/contents/207MSDCF";
+            const itemsPerPage = 10;
+            let currentPage = 1;
+            let allImageFiles = [];
+
+            // Fetch data dari repository GitHub
+            fetch(repoApiUrl)
+                .then(response => {
+                    if (!response.ok) throw new Error("Gagal mengambil data dari GitHub.");
+                    return response.json();
+                })
+                .then(data => {
+                    const validExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp'];
+                    allImageFiles = data.filter(file => {
+                        const ext = file.name.split('.').pop().toLowerCase();
+                        return file.type === "file" && validExtensions.includes(ext);
+                    });
+                    if (allImageFiles.length === 0) {
+                        photoGrid.innerHTML = `<div class="status-msg">Tidak ada foto ditemukan.</div>`;
+                        return;
+                    }
+                    displayPage(currentPage);
+                })
+                .catch(error => {
+                    console.error(error);
+                    photoGrid.innerHTML = `<div class="status-msg" style="color: #ff6b6b;"><i class="fa-solid fa-triangle-exclamation"></i> Gagal memuat galeri.</div>`;
+                });
+
+            function displayPage(page) {
+                photoGrid.innerHTML = "";
+                paginationContainer.style.display = "flex";
+                const startIndex = (page - 1) * itemsPerPage;
+                const endIndex = startIndex + itemsPerPage;
+                const pageItems = allImageFiles.slice(startIndex, endIndex);
+
+                pageItems.forEach(file => {
+                    const imageUrl = file.download_url;
+                    const fileName = file.name.split('.').slice(0, -1).join('.');
+                    const gridBox = document.createElement("div");
+                    gridBox.className = "grid-box glass";
+                    gridBox.setAttribute("data-filename", fileName);
+                    gridBox.innerHTML = `
+                        <img src="${imageUrl}" alt="${fileName}">
+                        <div class="card-info">
+                            <div class="card-dl-btn" title="Download Foto">
+                                <span class="dl-icon-status"></span>
+                                <img src="assets/png.png" class="dl-png-badge" alt="PNG">
+                            </div>
+                        </div>
+                    `;
+                    photoGrid.appendChild(gridBox);
+                    applyTiltEffect(gridBox);
+                });
+                initDownloadButtons();
+                setupPagination();
+            }
+
+            function setupPagination() {
+                paginationContainer.innerHTML = "";
+                const totalPages = Math.ceil(allImageFiles.length / itemsPerPage);
+                if (totalPages <= 1) return;
+                let leftDotsPrinted = false, rightDotsPrinted = false;
+                for (let i = 1; i <= totalPages; i++) {
+                    if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                        createPageButton(i);
+                    } else if (i < currentPage - 1 && !leftDotsPrinted) {
+                        printDots(); leftDotsPrinted = true;
+                    } else if (i > currentPage + 1 && !rightDotsPrinted) {
+                        printDots(); rightDotsPrinted = true;
+                    }
+                }
+            }
+
+            function printDots() {
+                const dots = document.createElement("span");
+                dots.className = "page-dots";
+                dots.innerHTML = "...";
+                paginationContainer.appendChild(dots);
+            }
+
+            function createPageButton(pageNumber) {
+                const btn = document.createElement("button");
+                btn.className = "page-btn";
+                btn.innerText = pageNumber;
+                if (pageNumber === currentPage) btn.classList.add("active");
+                btn.addEventListener("click", () => {
+                    currentPage = pageNumber;
+                    displayPage(currentPage);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+                paginationContainer.appendChild(btn);
+            }
+
+            document.getElementById("goHome").addEventListener("click", () => {
+                currentPage = 1;
+                displayPage(currentPage);
+            });
+
+            // LOGIK INTERAKSI BUKA/TUTUP POPUP DI TEMPAT SEMULA
+            const trigger = document.getElementById("openProfile");
+            const modal = document.getElementById("profileModal");
+            
+            trigger.addEventListener("click", (e) => {
+                if (!modal.contains(e.target)) {
+                    e.stopPropagation();
+                    modal.classList.toggle("active");
+                }
+            });
+            
+            document.addEventListener("click", (e) => {
+                if (!trigger.contains(e.target)) {
+                    modal.classList.remove("active");
+                }
+            });
+
+            // Tombol penutup internal
+            document.getElementById("closeProfileBtn").addEventListener("click", (e) => { e.stopPropagation(); modal.classList.remove("active"); });
+            document.getElementById("backToGalleryMenu").addEventListener("click", (e) => { e.stopPropagation(); modal.classList.remove("active"); });
+            document.getElementById("youDoBtn").addEventListener("click", (e) => { e.stopPropagation(); modal.classList.remove("active"); });
+
+            function initDownloadButtons() {
+                document.querySelectorAll(".card-dl-btn").forEach(btn => {
+                    btn.addEventListener("click", async (e) => {
+                        e.stopPropagation();
+                        const card = btn.closest(".grid-box");
+                        const img = card.querySelector("img");
+                        const fileNameAttr = card.getAttribute("data-filename") || "photo";
+                        const statusContainer = btn.querySelector(".dl-icon-status");
+                        const pngBadge = btn.querySelector(".dl-png-badge");
+                        
+                        if(img && img.src && statusContainer && pngBadge) {
+                            pngBadge.style.opacity = "0";
+                            statusContainer.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
+                            try {
+                                const response = await fetch(img.src);
+                                const blob = await response.blob();
+                                const blobUrl = URL.createObjectURL(blob);
+                                const link = document.createElement("a");
+                                link.href = blobUrl;
+                                link.download = `${fileNameAttr}.png`;
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                                URL.revokeObjectURL(blobUrl);
+                            } catch (error) {
+                                console.error(error);
+                                alert("Gagal mengunduh gambar.");
+                            } finally {
+                                statusContainer.innerHTML = "";
+                                pngBadge.style.opacity = "1";
+                            }
+                        }
+                    });
+                });
+            }
+
+            function applyTiltEffect(box) {
+                box.addEventListener("mousemove", (e) => {
+                    const rect = box.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const rotateY = (x - rect.width / 2) / 15;
+                    const rotateX = (rect.height / 2 - y) / 15;
+                    box.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+                });
+                box.style.transition = "transform 0.1s ease, box-shadow 0.3s ease";
+                box.addEventListener("mouseleave", () => {
+                    box.style.transition = "transform 0.5s ease, box-shadow 0.3s ease";
+                    box.style.transform = "";
+                });
+            }
+        });
+    </script>
+</body>
+</html>
